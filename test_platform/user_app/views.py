@@ -30,16 +30,20 @@ def login_action(request):
             if user is not None:
                 auth.login(request, user)
                 request.session['user'] = username
-                return HttpResponseRedirect('project_manage/')
+                return HttpResponseRedirect('manage/project_manage/')
                 # response.set_cookie('user', username, 3600)  # 添加浏览器cookie
             else:
                 return render(request, 'index.html', {'error': '用户名或密码错误'})
 
-@login_required  # 判断用户是否登录
-def project_manage(request):
-    username = request.session.get('user', '')  # 读取浏览器session
-    # username = request.COOKIES.get('user', '')  # 读取浏览器cookie
-    return render(request, 'project_manage.html', {'user': username})
+# @login_required  # 判断用户是否登录
+# def project_manage(request):
+#     username = request.session.get('user', '')  # 读取浏览器session
+#     project_all = Project.objects.all()
+#     # username = request.COOKIES.get('user', '')  # 读取浏览器cookie
+#     return render(request, 'project_manage.html', {
+#         'user': username,
+#         'projects': project_all
+#         })
 
 def logout(request):
     '''
