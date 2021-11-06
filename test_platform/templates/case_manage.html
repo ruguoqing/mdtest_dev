@@ -1,0 +1,141 @@
+
+
+  {% extends 'base.html' %}
+  {% block content %}
+
+
+
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-sm-3 col-md-2 sidebar">
+          <ul class="nav nav-sidebar">
+            <li><a href="/manage/project_manage">项目管理</a></li>
+            <li><a href="/manage/module_manage">模块管理 </a></li>
+
+          </ul>
+          <ul class="nav nav-sidebar">
+            <li class="active"><a href="/interface/case_manage">用例管理<span class="sr-only">(current)</span></a></li>
+            <li><a href="/interface/task_manage">任务管理</a></li>
+
+          </ul>
+          <ul class="nav nav-sidebar">
+            <li><a href="">mockserver</a></li>
+            <li><a href="">测试工具</a></li>
+
+          </ul>
+        </div>
+
+{#        #项目列表#}
+      {% if type == 'list' %}
+        <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+          <h3 class="page-header">用例列表
+          <button class="btn btn-default" type="button" style="float: right"
+           onclick="window.location.href='/interface/add_debug/'">创建</button>
+          </h3>
+
+          <div class="table-responsive">
+          <form class="navbar-form" method="get" action="/interface/search_case">
+              <div class="form-group">
+                  <input name="case_name" type="text" placeholder="名称" class="form-control">
+              </div>
+              <button type="submit" class="btn btn-success">搜索</button>
+          </form>
+
+            <table class="table table-striped">
+              <thead>
+                <tr>
+                  <th>id</th>
+                  <th>模块</th>
+                  <th>名称</th>
+                  <th>地址</th>
+                  <th>请求方法</th>
+{#                  <th>请求头</th>#}
+                  <th>参数类型</th>
+{#                  <th>参数</th>#}
+                  <th>创建时间</th>
+                  <th>操作</th>
+                </tr>
+              </thead>
+              <tbody>
+              {% for testcase in testcases %}
+                <tr>
+                  <td>{{ testcase.id }}</td>
+                  <td>{{ testcase.module }}</td>
+                  <td>{{ testcase.name }}</td>
+                  <td>{{ testcase.req_url }}</td>
+                  <td>{{ testcase.req_method }}</td>
+{#                  <td>{{ testcase.req_header }}</td>#}
+                  <td>{{ testcase.req_ptype }}</td>
+{#                  <td>{{ testcase.req_parameter }}</td>#}
+                  <td>{{ testcase.create_time | date:"Y-m-s H:m:s" }}</td>
+                  <td>
+                      <a href="/interface/debug_case/{{ testcase.id }}/">调试</a>
+                      <a href="/interface/delete_case/{{ testcase.id }}/">删除</a>
+                  </td>
+                </tr>
+              {% endfor %}
+
+              </tbody>
+            </table>
+          </div>
+
+          <div class="pagination">
+              <span class="step-links">
+                  <ul class="pagination">
+                      {% if testcases.has_previous %}
+                      <li><a href="?phone={{ phone }}&page={{ testcase.previous_page_number }}">&laquo;</a></li>
+                      {% endif %}
+
+                      <li><a href="#">{{ testcases.number}}</a></li>
+
+                      {% if testcases.has_next %}
+                      {% if phone %}
+                      <li><a href="?phone={{ phone }}&page={{ testcases.next_page_number }}">&raquo;</a></li>
+                      {% else %}
+                      <li><a href="?page={{ testcases.next_page_number }}">&raquo;</a></li>
+
+                      {% endif %}
+                      {% endif %}
+                      <li><a href="#">共：{{ testcases.paginator.num_pages}}页</a></li>
+                  </ul>
+
+
+              </span>
+          </div>
+        </div>
+      {% endif %}
+
+
+
+{#    #  添加用例#}
+
+    {% if type == 'debug' %}
+        <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+{#          <h3 class="page-header">添加用例</h3>#}
+            {% block debug %}
+            {% endblock %}
+        </div>
+    {% endif %}
+
+    {#    #  调试用例#}
+    {% if type == 'debug_case'%}
+        <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+{#          <h3 class="page-header">添加用例</h3>#}
+        {% block debug_case %}
+        {% endblock %}
+        </div>
+        {% endif %}
+
+
+      </div>
+    </div>
+
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js" integrity="sha384-nvAa0+6Qg9clwYCGGPpDQLVpLNn0fRaROjHqs13t4Ggj3Ez50XnGQqc/r8MhnRDZ" crossorigin="anonymous"></script>
+    <script>window.jQuery || document.write('<script src="https://cdn.jsdelivr.net/npm/@bootcss/v3.bootcss.com@1.0.17/assets/js/vendor/jquery.min.js"><\/script>')</script>
+
+ {% endblock %}
+

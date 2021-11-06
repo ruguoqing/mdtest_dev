@@ -1,0 +1,194 @@
+ {% extends 'case_manage.html' %}
+ {% block debug_case %}
+
+
+					<!-- 表单区域-->
+					<fieldset>
+						<!--表单主题-->
+                        <div id="legend" class="">
+						<legend class="">调试用例 </legend>
+                        </div>
+
+                    <div style="width: 80%;margin-left: 20px;">
+                        <form action="/debug/" method="get" class="bs-example bs-example-form"
+                              role="form" style="margin-top: 30px">
+
+                            <div class="input-group">
+                                <span class="input-group-addon" >项目</span>
+                                <select id="project_name">
+                                     <option>{{ project }}</option>
+                                </select>
+                            </div>
+                            <br>
+                            <div class="input-group">
+                                <span class="input-group-addon" >模块</span>
+                                <select id="module_name">
+                                    <option>{{ module }}</option>
+                                </select>
+                            </div>
+                            <br>
+
+                            <div class="input-group">
+                                <span class="input-group-addon" >名称</span>
+                                <input class="form-control" id="req_name" type="text" value="{{ name }}"/>
+                            </div>
+                            <br>
+
+                            <div class="input-group">
+                                <span class="input-group-addon" >URL</span>
+                                <input class="form-control" id="req_url" type="text" value="{{ url }}"/>
+                            </div>
+                            <br>
+
+                            <div>
+                                <label>请求方法:</label>
+                                    <label class="radio-inline">
+                                        <input type="radio" name="req_method" id="method-get" value="get" checked/>GET
+                                    </label>
+                                    <label class="radio-inline">
+                                    {% if method == 'post' %}
+                                        <input type="radio" name="req_method" id="method-post" value="post" checked/>POST
+                                    {% else %}
+                                        <input type="radio" name="req_method" id="method-post" value="post"/>POST
+                                    {% endif %}
+
+                                    </label>
+{#                                    <label class="radio-inline">#}
+{#                                        <input type="radio" name="req_method" id="method-put" value="put" />PUT#}
+{#                                    </label>#}
+{#                                    <label class="radio-inline">#}
+{#                                        <input type="radio" name="req_method" id="method-delete" value="delete"/>DELETE#}
+{#                                    </label>#}
+
+                            </div>
+                            <br>
+                            <div>
+                                <label>参数类型:</label>
+                                   <label class="radio-inline">
+                                        <input type="radio" name="ptype" id="form-data" value="form-data" checked/>FORM-DATA
+                                   </label>
+                                   <label class="radio-inline">
+                                       {% if ptype == 'json' %}
+                                         <input type="radio" name="ptype" id="json" value="json" checked/>JSON
+                                       {% else %}
+                                         <input type="radio" name="ptype" id="json" value="json"/>JSON
+                                       {% endif %}
+                                   </label>
+                            </div>
+
+                            <br>
+
+                            <div class="input-group">
+                                <span class="input-group-addon">Header</span>
+                                <input class="form-control" id="req_header" type="text" value="{{ header }}"/>
+                            </div>
+                            <p style="color: #8c8c8c ">说明：以字典的方式设置参数，如：{'content-type':'application/json'}</p>
+
+                            <div class="input-group">
+                                <span class="input-group-addon">参数</span>
+                                <input class="form-control" id="req_parameter" type="text" value="{{ parameter }}"/>
+                            </div>
+                            <p style="color: #8c8c8c ">说明：以字典的方式设置参数，如：{'id':1}</p>
+
+
+                            <div style='width: 100%;heigh: 60px;'>
+                                <button class="btn btn-default" type="button" id="back" style="float: right;margin-right: 10px"
+                                        onclick="window.location.href='/interface/case_manage'">返回</button>
+                                <button class="btn btn-primary" type="button" id="save" style="float: right">保存</button>
+                                <button class="btn btn-success" type="button" id="send" style="float: right;margin-right: 10px">调试</button>
+                            </div>
+
+
+                      </form>
+
+                   </div>
+                        <div>
+                            <p>返回结果：</p>
+                            <textarea class="form-control" rows='10' id="result" style="float: right"></textarea>
+                        </div>
+
+
+                </fieldset>
+
+         <script type="text/javascript">
+
+
+             $(document).ready(function() {
+                 //调试接口
+                 $('#send').click(function () {
+                     let name = $('#req_name').val()
+                     let req_url = $('#req_url').val()
+                     let req_method = $('input[name="req_method"]:checked').val()
+                     let req_header = $('#req_header').val()
+                     let req_ptype = $('input[name="ptype"]:checked').val()
+                     let parameter = $('#req_parameter').val()
+                     console.log(name,req_url,req_method,parameter)
+
+                     if (req_url === '') {
+                         window.alert('URL不能为空');
+                     } else if (parameter === '') {
+                         parameter = '{}';
+                     }
+                     // 发送一个请求
+                     $.post('/interface/api_debug/', {
+                         //'djnago接收的': 上面的let变量,
+                         'name': name,
+                         'req_url': req_url,
+                         'req_method': req_method,
+                         'req_header':req_header,
+                         'rep_ptype': req_ptype,
+                         'parameter': parameter
+                     }, function(result) {
+                         $('#result').text(result);
+                     });
+                 });
+
+                 //保存接口
+                  $('#save').click(function () {
+                     let module = $('#module_name').val()
+                     let name = $('#req_name').val()
+                     let req_url = $('#req_url').val()
+                     let req_method = $('input[name="req_method"]:checked').val()
+                     let req_header = $('#req_header').val()
+                     let req_ptype = $('input[name="ptype"]:checked').val()
+                     let parameter = $('#req_parameter').val()
+                     console.log(module,name,req_url,req_method,parameter)
+
+                     if (req_url === '') {
+                         window.alert('URL不能为空');
+                     } else if (parameter === '') {
+                         parameter = '{}';
+                     }else if (req_header === '') {
+                         req_header = '{}';
+                     } else if (req_method === '') {
+                         window.alert('method不能为空');
+                     }
+
+                     $.post('/interface/save_case/',{
+                         //'djnago接收的': 上面的let变量,
+                         'module': module,
+                         'name': name,
+                         'req_url': req_url,
+                         'req_method': req_method,
+                         'req_header':req_header,
+                         'req_ptype': req_ptype,
+                         'parameter': parameter
+                     },function(){
+                     window.alert('保存成功');
+                     });
+
+                 });
+
+
+             })
+
+         </script>
+
+			</div>
+		</div>
+	</div>
+{#   </body>#}
+{#</html>#}
+
+
+  {% endblock %}

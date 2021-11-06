@@ -61,8 +61,6 @@ def edit_project(request, pid):
 
     else:
         if pid:
-            # instance = Project.objects.filter(id=pid)
-            # print(instance)
             form = ProjectForm(
                 instance=Project.objects.get(id=pid)
             )
@@ -71,8 +69,4 @@ def edit_project(request, pid):
 
 def delete_project(request, pid):
     Project.objects.filter(id=pid).delete()
-    # project_all = Project.objects.all()
-    #
-    # return render(request, "project_manage.html", {'projects': project_all,
-    #                                                'type': 'list'})
     return HttpResponseRedirect('/manage/project_manage/')
