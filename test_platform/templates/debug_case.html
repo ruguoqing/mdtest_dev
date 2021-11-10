@@ -15,16 +15,12 @@
 
                             <div class="input-group">
                                 <span class="input-group-addon" >项目</span>
-                                <select id="project_name">
-                                     <option>{{ project }}</option>
-                                </select>
+                                <select  id="project_name"></select>
                             </div>
                             <br>
                             <div class="input-group">
                                 <span class="input-group-addon" >模块</span>
-                                <select id="module_name">
-                                    <option>{{ module }}</option>
-                                </select>
+                                <select id="module_name"></select>
                             </div>
                             <br>
 
@@ -75,9 +71,7 @@
                                        {% endif %}
                                    </label>
                             </div>
-
                             <br>
-
                             <div class="input-group">
                                 <span class="input-group-addon">Header</span>
                                 <input class="form-control" id="req_header" type="text" value="{{ header }}"/>
@@ -89,29 +83,32 @@
                                 <input class="form-control" id="req_parameter" type="text" value="{{ parameter }}"/>
                             </div>
                             <p style="color: #8c8c8c ">说明：以字典的方式设置参数，如：{'id':1}</p>
-
-
+                            <br>
+                            <div>
+                                <button class="btn btn-success" type="button" id="assert" style="float: right" >验证</button>
+                                <p>结果验证：</p>
+                                <textarea  class="form-control" rows='3' id="assert_text" ></textarea>
+                            </div>
+                            <br>
                             <div style='width: 100%;heigh: 60px;'>
-                                <button class="btn btn-default" type="button" id="back" style="float: right;margin-right: 10px"
+                                <button class="btn btn-default" type="button" id="back" style="float: right"
                                         onclick="window.location.href='/interface/case_manage'">返回</button>
-                                <button class="btn btn-primary" type="button" id="save" style="float: right">保存</button>
+                                <button class="btn btn-primary" type="button" id="save" style="float: right;margin-right: 10px">保存</button>
                                 <button class="btn btn-success" type="button" id="send" style="float: right;margin-right: 10px">调试</button>
                             </div>
 
-
                       </form>
 
-                   </div>
                         <div>
                             <p>返回结果：</p>
-                            <textarea class="form-control" rows='10' id="result" style="float: right"></textarea>
+                            <textarea  class="form-control" rows='10' id="result" ></textarea>
                         </div>
-
-
+                   </div>
                 </fieldset>
 
          <script type="text/javascript">
 
+             ProjectInit('project_name', 'module_name', "{{ project }}", "{{ module }}");
 
              $(document).ready(function() {
                  //调试接口
@@ -122,12 +119,14 @@
                      let req_header = $('#req_header').val()
                      let req_ptype = $('input[name="ptype"]:checked').val()
                      let parameter = $('#req_parameter').val()
-                     console.log(name,req_url,req_method,parameter)
 
                      if (req_url === '') {
                          window.alert('URL不能为空');
+                         return;
                      } else if (parameter === '') {
                          parameter = '{}';
+                     }else if (req_header === '') {
+                         req_header = '{}';
                      }
                      // 发送一个请求
                      $.post('/interface/api_debug/', {
@@ -143,6 +142,26 @@
                      });
                  });
 
+                 //验证接口
+                 $('#assert').click(function () {
+                     let assert_text = $('#assert_text').val()
+                     let result_text = $('#result').val()
+                     if (assert_text === '' || result_text === '') {
+                         window.alert('验证内容或者返回结果不能为空');
+                         return;
+                     }
+                     // 发送一个请求
+                     $.post('/interface/api_assert/', {
+                         //'djnago接收的': 上面的let变量,
+                         'assert_text': assert_text,
+                         'result_text': result_text,
+                     }, function(resp) {
+                         var str = resp.msg+resp.data
+                         window.alert(str);
+                         return;
+                     });
+                 });
+
                  //保存接口
                   $('#save').click(function () {
                      let module = $('#module_name').val()
@@ -152,19 +171,20 @@
                      let req_header = $('#req_header').val()
                      let req_ptype = $('input[name="ptype"]:checked').val()
                      let parameter = $('#req_parameter').val()
-                     console.log(module,name,req_url,req_method,parameter)
 
                      if (req_url === '') {
                          window.alert('URL不能为空');
+                         return;
+                     } else if (req_method === '') {
+                         window.alert('method不能为空');
+                         return;
                      } else if (parameter === '') {
                          parameter = '{}';
                      }else if (req_header === '') {
                          req_header = '{}';
-                     } else if (req_method === '') {
-                         window.alert('method不能为空');
                      }
 
-                     $.post('/interface/save_case/',{
+                     $.post('/interface/update_case/{{ cid }}/',{
                          //'djnago接收的': 上面的let变量,
                          'module': module,
                          'name': name,
@@ -173,13 +193,11 @@
                          'req_header':req_header,
                          'req_ptype': req_ptype,
                          'parameter': parameter
-                     },function(){
-                     window.alert('保存成功');
+                     },function(resp){
+                     window.alert(resp);
                      });
 
                  });
-
-
              })
 
          </script>
@@ -187,8 +205,5 @@
 			</div>
 		</div>
 	</div>
-{#   </body>#}
-{#</html>#}
-
 
   {% endblock %}

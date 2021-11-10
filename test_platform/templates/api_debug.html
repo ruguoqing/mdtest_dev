@@ -76,12 +76,18 @@
                                 <input class="form-control" id="req_parameter" type="text"/>
                             </div>
                             <p style="color: #8c8c8c ">说明：以字典的方式设置参数，如：{'id':1}</p>
-
+                            <br>
+                            <div>
+                                <button class="btn btn-success" type="button" id="assert" style="float: right" >验证</button>
+                                <p>结果验证：</p>
+                                <textarea  class="form-control" rows='3' id="assert_text" ></textarea>
+                            </div>
+                            <br>
 
                             <div style='width: 100%;heigh: 60px;'>
-                                <button class="btn btn-default" type="button" id="back" style="float: right;margin-right: 10px"
+                                <button class="btn btn-default" type="button" id="back" style="float: right;"
                                         onclick="window.location.href='/interface/case_manage'">返回</button>
-                                <button class="btn btn-primary" type="button" id="save" style="float: right">保存</button>
+                                <button class="btn btn-primary" type="button" id="save" style="float: right;margin-right: 10px">保存</button>
                                 <button class="btn btn-success" type="button" id="send" style="float: right;margin-right: 10px">调试</button>
 
                             </div>
@@ -90,9 +96,9 @@
                       </form>
 
                    </div>
-                        <div>
+                        <div style="width: 80%;margin-left: 20px;">
                             <p>返回结果：</p>
-                            <textarea class="form-control" rows='10' id="result" style="float: right"></textarea>
+                            <textarea class="form-control" rows='10' id="result"></textarea>
                         </div>
 
 
@@ -111,10 +117,12 @@
                      let req_header = $('#req_header').val()
                      let req_ptype = $('input[name="ptype"]:checked').val()
                      let parameter = $('#req_parameter').val()
-                     console.log(name,req_url,req_method,parameter)
 
                      if (req_url === '') {
                          window.alert('URL不能为空');
+                         return;
+                     } else if (req_header === '') {
+                         req_header = '{}';
                      } else if (parameter === '') {
                          parameter = '{}';
                      }
@@ -131,7 +139,25 @@
                          $('#result').text(result);
                      });
                  });
+                 //验证接口
+                 $('#assert').click(function () {
+                     let assert_text = $('#assert_text').val()
+                     let result_text = $('#result').val()
 
+                     if (assert_text === '' || result_text === '') {
+                         window.alert('验证内容或者返回结果不能为空');
+                         return;
+                     }
+                     // 发送一个请求
+                     $.post('/interface/api_assert/', {
+                         //'djnago接收的': 上面的let变量,
+                         'assert_text': assert_text,
+                         'result_text': result_text,
+                     }, function(resp) {
+                         window.alert(resp.msg);
+                         return;
+                     });
+                 });
                  //保存接口
                   $('#save').click(function () {
                      let module = $('#module_name').val()
@@ -141,16 +167,17 @@
                      let req_header = $('#req_header').val()
                      let req_ptype = $('input[name="ptype"]:checked').val()
                      let parameter = $('#req_parameter').val()
-                     console.log(module,name,req_url,req_method,parameter)
 
                      if (req_url === '') {
                          window.alert('URL不能为空');
-                     } else if (parameter === '') {
-                         parameter = '{}';
-                     }else if (req_header === '') {
-                         req_header = '{}';
-                     } else if (req_method === '') {
+                         return;
+                     }  else if (req_method === '') {
                          window.alert('method不能为空');
+                         return;
+                     }else if (req_header === '') {
+                        req_header = '{}';
+                     }else if (parameter === '') {
+                         parameter = '{}';
                      }
 
                      $.post('/interface/save_case/',{
@@ -162,8 +189,8 @@
                          'req_header':req_header,
                          'req_ptype': req_ptype,
                          'parameter': parameter
-                     },function(){
-                     window.alert('保存成功');
+                     },function(resp){
+                     window.alert(resp);
                      });
 
                  });

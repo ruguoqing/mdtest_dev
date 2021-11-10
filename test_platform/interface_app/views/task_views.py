@@ -4,7 +4,7 @@ import json
 from test_platform import common
 from django.http import HttpResponse, JsonResponse, HttpResponseRedirect
 from django.shortcuts import render
-from interface_app.models import Testcase
+from interface_app.models import Testcase, Testtask
 from project_app.models import Module, Project
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 
@@ -12,9 +12,9 @@ from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 # Create your views here
 
 # 用例列表
-def case_manage(request):
-    testcases = Testcase.objects.all()
-    paginator = Paginator(testcases, 10)
+def task_manage(request):
+    tasks = Testtask.objects.all()
+    paginator = Paginator(tasks, 10)
     page = request.GET.get('page')
     try:
         contacts = paginator.page(page)
@@ -24,41 +24,19 @@ def case_manage(request):
     except EmptyPage:
         # 如果超出范围，取最后一页
         contacts = paginator.page(paginator.num_pages)
-    return render(request, 'case_manage.html', {'type': 'list',
-                                                'testcases': contacts
+    return render(request, 'task_manage.html', {'type': 'list',
+                                                'tasks': contacts
                                                 })
 
-# 搜索用例名称
-def search_case(request):
-    if request.method == 'GET':
-        case_name = request.GET.get('case_name', '')
-        print(case_name)
-        testcases = Testcase.objects.filter(name__contains=case_name)
-        paginator = Paginator(testcases, 10)
-        page = request.GET.get('page')
-        try:
-            contacts = paginator.page(page)
-        except PageNotAnInteger:
-            # 如果不是整型，取第一页
-            contacts = paginator.page(1)
-        except EmptyPage:
-            # 如果超出范围，取最后一页
-            contacts = paginator.page(paginator.num_pages)
-        return render(request, 'case_manage.html', {'type': 'list',
-                                                    'testcases': contacts
-                                                    })
 
+def add_task(request):
+    if request.method == 'GET':
+        return render(request, 'add_task.html', {'type': 'add',
+                                                   })
     else:
         return HttpResponse('404')
 
 
-# 创建用例
-def add_debug(request):
-    if request.method == 'GET':
-        return render(request, 'api_debug.html', {'type': 'debug',
-                                                  })
-    else:
-        return HttpResponse('404')
 
 
 # 选择一个用例点击调试
@@ -86,43 +64,21 @@ def delete_case(request, cid):
     return HttpResponseRedirect('/interface/case_manage/')
 
 
-# 调试用例
-def api_debug(request):
-    if request.method == 'POST':
-        url = request.POST.get('req_url')
-        method = request.POST.get('req_method')
-        header = request.POST.get('req_header')
-        ptype = request.POST.get('req_ptype')
-        parameter = request.POST.get('parameter')
-        try:
-            header = json.loads(header.replace("'", "\""))
-            payload = json.loads(parameter.replace("'", "\""))
-        except json.JSONDecodeError:
-            return HttpResponse('请求头或者参数输入错误')
 
-        if method == 'get':
-            r = requests.get(url, data=payload)
-        if method == 'post':
-            r = requests.post(url, headers=header, data=payload)
-        return HttpResponse(r.text)
-    # else:
-    #     return render(request, 'api_debug.html', {'type': 'debug',
-    #                                               })
-
-
-# 获取项目和模块列表
-def get_project_list(request):
+# 获取用例
+def get_case_info(request):
     datalist = []
     project_list = Project.objects.all()
     for project in project_list:
-        module_list = Module.objects.filter(project=project.id)
-        if len(module_list) != 0:
-            module_name = []
-            for module in module_list:
-                module_name.append(module.name)
-            datalist.append({'name': project.name, 'moduleList': module_name})
+        module_list = Module.objects.filter(project_id=project.id)
+        for module in module_list:
+            case_list = Testcase.objects.filter(module_id=module.id)
+            for case in case_list:
+                case_info = {'case_id': case.id, 'case': project.name + '-->' + module.name + '-->' + case.name}
+                datalist.append(case_info)
+    if len(datalist) != 0:
+        return JsonResponse({'success': 'true', 'data': datalist})
 
-    return JsonResponse({'success': 'true', 'data': datalist})
 
 
 def save_case(request):
@@ -172,34 +128,3 @@ def update_case(request, cid):
         return HttpResponse('保存失败')
 
 
-def api_assert(request):
-    if request.method == 'POST':
-        assert_text = request.POST.get('assert_text')
-        assert_list = assert_text.split()
-        result_text = request.POST.get('result_text')
-        assert_error = []
-        if assert_text == '' or result_text == '':
-            # return JsonResponse({'success': 'False', 'msg': '断言或者接口返回不能为空', 'ast': assert_error})
-            return common.response_failed('断言或者接口返回不能为空')
-
-        for ast in assert_list:
-            try:
-                assert ast in result_text
-            except AssertionError:
-                assert_error.append(ast)
-        if len(assert_error) > 0:
-            # return JsonResponse({'success': 'True', 'msg': '验证失败，请检查以下接口: ', 'ast': assert_error})
-            return common.response_failed('验证失败，请检查以下断言: ', assert_error)
-        else:
-            # return JsonResponse({'success': 'True', 'msg': '验证成功', 'ast': assert_error})
-            return common.response_successed('验证成功')
-
-
-
-# https://www.cnblogs.com/mzc1997/p/7813801.html
-# requests.get('http://httpbin.org/get')
-# requests.post('http://httpbin.org/post'),{"name":"tom","age":"22"}
-# requests.put('http://httpbin.org/put')
-# requests.delete('http://httpbin.org/delete')
-# requests.head('http://httpbin.org/get')
-# requests.options('http://httpbin.org/get')
