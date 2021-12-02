@@ -91,8 +91,6 @@
                                 <button class="btn btn-success" type="button" id="send" style="float: right;margin-right: 10px">调试</button>
 
                             </div>
-
-
                       </form>
 
                    </div>
@@ -135,8 +133,10 @@
                          'req_header':req_header,
                          'rep_ptype': req_ptype,
                          'parameter': parameter
-                     }, function(result) {
-                         $('#result').text(result);
+                     }, function(resp) {
+                         window.alert(resp.msg);
+                         if (resp.success === 'True'){
+                         $('#result').text(resp.data)};
                      });
                  });
                  //验证接口

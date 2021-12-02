@@ -21,5 +21,12 @@ urlpatterns = [
     path('task_manage/logout/', views.logout),
     path('add_task/', task_views.add_task),
     path('get_case_info', task_views.get_case_info),
+    path('get_selected_cases', task_views.get_selected_cases),
+    path('save_task/', task_views.save_task),
+    path('edit_task/<int:tid>/', task_views.edit_task),
+    path('delete_task/<int:tid>/', task_views.delete_task),
+    path('run_task/<int:tid>/', task_views.run_task),
+    path('task_result/<int:tid>/', task_views.task_result),
+
 ]
 

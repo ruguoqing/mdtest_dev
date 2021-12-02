@@ -6,16 +6,15 @@
                         <form action="/debug/" method="get" class="bs-example bs-example-form"
                               role="form" style="margin-top: 30px">
 
-
                             <div class="input-group">
                                 <span class="input-group-addon" >名称</span>
-                                <input class="form-control" id="req_name" type="text"/>
+                                <input class="form-control" id="task_name" type="text"value={{ name }}>
                             </div>
                             <br>
 
                             <div class="input-group">
                                 <span class="input-group-addon" >描述</span>
-                                <textarea  class="form-control" rows='3' id="assert_text" ></textarea>
+                                <textarea class="form-control" rows='3' id="describe" >{{ describe }}</textarea>
                             </div>
                             <br>
 
@@ -38,75 +37,44 @@
 
          <script type="text/javascript">
 
-         CaseInit();
-
+         {#CaseInit();#}
+         {#CaseSelected();#}
 
           $(document).ready(function() {
 
-                 //验证接口
-                 $('#assert').click(function () {
-                     let assert_text = $('#assert_text').val()
-                     let result_text = $('#result').val()
-
-                     if (assert_text === '' || result_text === '') {
-                         window.alert('验证内容或者返回结果不能为空');
-                         return;
-                     }
-                     // 发送一个请求
-                     $.post('/interface/api_assert/', {
-                         //'djnago接收的': 上面的let变量,
-                         'assert_text': assert_text,
-                         'result_text': result_text,
-                     }, function(resp) {
-                         window.alert(resp.msg);
-                         return;
-                     });
-                 });
                  //保存接口
                   $('#save').click(function () {
-                     let module = $('#module_name').val()
-                     let name = $('#req_name').val()
-                     let req_url = $('#req_url').val()
-                     let req_method = $('input[name="req_method"]:checked').val()
-                     let req_header = $('#req_header').val()
-                     let req_ptype = $('input[name="ptype"]:checked').val()
-                     let parameter = $('#req_parameter').val()
-
-                     if (req_url === '') {
-                         window.alert('URL不能为空');
-                         return;
-                     }  else if (req_method === '') {
-                         window.alert('method不能为空');
-                         return;
-                     }else if (req_header === '') {
-                        req_header = '{}';
-                     }else if (parameter === '') {
-                         parameter = '{}';
+                     let name = $('#task_name').val();
+                     let describe = $('#describe').val();
+                     let elements = $('#case_list > input');
+                     let cases='';
+                     for (var i = 0;i < elements.length; i++){
+                         if (elements[i].checked === true){
+                             var mycase = elements[i].value;
+                             cases = cases+mycase+',';
+                         }
                      }
 
-                     $.post('/interface/save_case/',{
+                     if (name === '') {
+                         window.alert('名称不能为空');
+                         return;
+                     }
+
+                     $.post('/interface/save_task/',{
                          //'djnago接收的': 上面的let变量,
-                         'module': module,
                          'name': name,
-                         'req_url': req_url,
-                         'req_method': req_method,
-                         'req_header':req_header,
-                         'req_ptype': req_ptype,
-                         'parameter': parameter
+                         'describe': describe,
+                         'cases': cases,
                      },function(resp){
-                     window.alert(resp);
+                     window.alert(resp.msg);
                      });
 
                  });
-
 
              })
 
-
          </script>
 
-			</div>
-		</div>
-	</div>
+
 
   {% endblock %}

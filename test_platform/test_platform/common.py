@@ -2,7 +2,7 @@ from django.http import JsonResponse
 
 
 # 接口返回成功
-def response_successed(message='请求成功', data={}):
+def response_succeed(message='请求成功', data={}):
     content = {
         'success': 'True',
         'msg': message,

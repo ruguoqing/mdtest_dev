@@ -13,7 +13,7 @@ from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 
 # 用例列表
 def case_manage(request):
-    testcases = Testcase.objects.all()
+    testcases = Testcase.objects.all().order_by('id')
     paginator = Paginator(testcases, 10)
     page = request.GET.get('page')
     try:
@@ -34,7 +34,7 @@ def search_case(request):
         case_name = request.GET.get('case_name', '')
         print(case_name)
         testcases = Testcase.objects.filter(name__contains=case_name)
-        paginator = Paginator(testcases, 10)
+        paginator = Paginator(testcases, 5)
         page = request.GET.get('page')
         try:
             contacts = paginator.page(page)
@@ -94,21 +94,20 @@ def api_debug(request):
         header = request.POST.get('req_header')
         ptype = request.POST.get('req_ptype')
         parameter = request.POST.get('parameter')
-        try:
-            header = json.loads(header.replace("'", "\""))
-            payload = json.loads(parameter.replace("'", "\""))
-        except json.JSONDecodeError:
-            return HttpResponse('请求头或者参数输入错误')
-
+        print(header,parameter)
+        # try:
+        #     header = json.loads(header.replace("'", "\""))
+        # except json.JSONDecodeError:
+        #     return common.response_failed('请求头或者参数输入错误')
+        # try:
+        #     parameter = json.loads(parameter.replace("'", "\""))
+        # except json.JSONDecodeError:
+        #     return common.response_failed('请求头或者参数输入错误')
         if method == 'get':
-            r = requests.get(url, data=payload)
+            r = requests.get(url,  data=parameter)
         if method == 'post':
-            r = requests.post(url, headers=header, data=payload)
-        return HttpResponse(r.text)
-    # else:
-    #     return render(request, 'api_debug.html', {'type': 'debug',
-    #                                               })
-
+            r = requests.post(url,  data=parameter)
+        return common.response_succeed(data=r.text)
 
 # 获取项目和模块列表
 def get_project_list(request):
@@ -121,7 +120,6 @@ def get_project_list(request):
             for module in module_list:
                 module_name.append(module.name)
             datalist.append({'name': project.name, 'moduleList': module_name})
-
     return JsonResponse({'success': 'true', 'data': datalist})
 
 
@@ -192,7 +190,7 @@ def api_assert(request):
             return common.response_failed('验证失败，请检查以下断言: ', assert_error)
         else:
             # return JsonResponse({'success': 'True', 'msg': '验证成功', 'ast': assert_error})
-            return common.response_successed('验证成功')
+            return common.response_succeed('验证成功', data='')
 
 
 

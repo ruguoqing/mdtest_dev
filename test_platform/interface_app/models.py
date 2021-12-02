@@ -34,3 +34,21 @@ class Testtask(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class Taskresult(models.Model):
+    """
+    任务管理表
+    """
+    task = models.ForeignKey(Testtask, on_delete=models.CASCADE)
+    name = models.CharField('名称', max_length=100, default='')
+    tests = models.IntegerField('运行数', default='')
+    failures = models.IntegerField('失败数', default='')
+    skipped = models.IntegerField('跳过数', default='')
+    errors = models.IntegerField('错误数', default='')
+    time = models.FloatField('运行时长', default='')
+    result = models.TextField('结果描述', default='')
+    run_time = models.DateTimeField('执行时间')
+
+    def __str__(self):
+        return self.name

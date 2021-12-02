@@ -67,7 +67,9 @@
 {#                  <td>{{ testcase.req_header }}</td>#}
                   <td>{{ testcase.req_ptype }}</td>
 {#                  <td>{{ testcase.req_parameter }}</td>#}
-                  <td>{{ testcase.create_time | date:"Y-m-s H:m:s" }}</td>
+                  <td>{{ testcase.create_time | date:"Y-m-d H:i:s" }}</td>
+                  <td>{{ project.create_time | date:"Y-m-d H:i:s" }}</td>
+
                   <td>
                       <a href="/interface/debug_case/{{ testcase.id }}/">调试</a>
                       <a href="/interface/delete_case/{{ testcase.id }}/">删除</a>

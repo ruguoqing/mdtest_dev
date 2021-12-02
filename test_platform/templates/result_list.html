@@ -1,0 +1,105 @@
+
+
+  {% extends 'base.html' %}
+  {% block content %}
+
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-sm-3 col-md-2 sidebar">
+          <ul class="nav nav-sidebar">
+            <li><a href="/manage/project_manage">项目管理</a></li>
+            <li><a href="/manage/module_manage">模块管理</a></li>
+
+          </ul>
+          <ul class="nav nav-sidebar">
+            <li><a href="/interface/case_manage">用例管理</a></li>
+            <li class="active"><a href="/interface/task_manage">任务管理 <span class="sr-only">(current)</span></a></li>
+
+          </ul>
+          <ul class="nav nav-sidebar">
+            <li><a href="">mockserver</a></li>
+            <li><a href="">测试工具</a></li>
+
+          </ul>
+        </div>
+
+{#        #结果列表#}
+      {% if type == 'list' %}
+        <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+          <h3 class="page-header">结果列表</h3>
+
+          <div class="table-responsive">
+            <table class="table table-striped">
+              <thead>
+                <tr>
+                  <th>名称</th>
+                  <th>用例数</th>
+                  <th>失败数</th>
+                  <th>跳过数</th>
+                  <th>错误数</th>
+                  <th>运行时长</th>
+                  <th>运行时间</th>
+                  <th>操作</th>
+                </tr>
+              </thead>
+              <tbody>
+              {% for result in results %}
+                <tr>
+                  <td>{{ result.name }}</td>
+                  <td>{{ result.tests }}</td>
+                  <td>{{ result.failures }}</td>
+                  <td>{{ result.skipped }}</td>
+                  <td>{{ result.errors }}</td>
+                  <td>{{ result.time }}</td>
+                  <td>{{ result.run_time | date:"Y-m-d H:i:s" }}</td>
+
+                  <td>
+{#                      <button class="btn btn-primary btn-lg" data-toggle="modal" data-target="#myModal">#}
+{#                          <span class="glyphicon glyphicon-eye-open" ></span>#}
+{#                      </button>#}
+                      <span class="glyphicon glyphicon-eye-open" data-toggle="modal" data-target="#myModal"></span>
+                        <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+{#                                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">#}
+{#                                            &times#}
+{#                                        </button>#}
+                                        <h4 class="modal-title" id="myModalLabel">
+                                            详细结果信息
+                                        </h4>
+                                    </div>
+                                    <div class="modal-body" style="max-height: 400px;overflow-y: scroll;white-space: pre">
+                                        {{ result.result }}
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-default" data-dismiss="modal">关闭
+                                        </button>
+                                    </div>
+                                </div><!-- /.modal-content -->
+                            </div><!-- /.modal -->
+                        </div>
+                  </td>
+                </tr>
+              {% endfor %}
+              </tbody>
+            </table>
+
+          </div>
+        </div>
+      {% endif %}
+
+
+
+      </div>
+    </div>
+
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js" integrity="sha384-nvAa0+6Qg9clwYCGGPpDQLVpLNn0fRaROjHqs13t4Ggj3Ez50XnGQqc/r8MhnRDZ" crossorigin="anonymous"></script>
+    <script>window.jQuery || document.write('<script src="https://cdn.jsdelivr.net/npm/@bootcss/v3.bootcss.com@1.0.17/assets/js/vendor/jquery.min.js"><\/script>')</script>
+
+ {% endblock %}
+

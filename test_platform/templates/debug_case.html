@@ -137,8 +137,10 @@
                          'req_header':req_header,
                          'rep_ptype': req_ptype,
                          'parameter': parameter
-                     }, function(result) {
-                         $('#result').text(result);
+                     }, function(resp) {
+                         window.alert(resp.msg);
+                         if (resp.success === 'True'){
+                         $('#result').text(resp.data)};
                      });
                  });
 
@@ -156,6 +158,7 @@
                          'assert_text': assert_text,
                          'result_text': result_text,
                      }, function(resp) {
+
                          var str = resp.msg+resp.data
                          window.alert(str);
                          return;
