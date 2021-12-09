@@ -20,7 +20,7 @@ class Module(models.Model):
     """
     模块表
     """
-    project = models.ForeignKey(Project, on_delete=models.CASCADE)
+    project = models.ForeignKey(Project, limit_choices_to={'status': 1}, on_delete=models.CASCADE)
     name = models.CharField('名称', max_length=100, default='')
     describe = models.TextField('描述', max_length=200, default='')
     create_time = models.DateTimeField('创建时间', auto_now=True)

@@ -52,7 +52,7 @@ def search_case(request):
         return HttpResponse('404')
 
 
-# 创建用例
+# 创建用例，
 def add_debug(request):
     if request.method == 'GET':
         return render(request, 'api_debug.html', {'type': 'debug',
@@ -94,20 +94,25 @@ def api_debug(request):
         header = request.POST.get('req_header')
         ptype = request.POST.get('req_ptype')
         parameter = request.POST.get('parameter')
-        print(header,parameter)
-        # try:
-        #     header = json.loads(header.replace("'", "\""))
-        # except json.JSONDecodeError:
-        #     return common.response_failed('请求头或者参数输入错误')
-        # try:
-        #     parameter = json.loads(parameter.replace("'", "\""))
-        # except json.JSONDecodeError:
-        #     return common.response_failed('请求头或者参数输入错误')
+        # print('请求头' + header, '参数' + parameter)
+        try:
+            header = json.loads(header.replace("'", "\""))
+            if type(header) == int:
+                return common.response_failed('请求头输入错误')
+        except json.JSONDecodeError:
+            return common.response_failed('请求头输入错误')
+        try:
+            parameter = json.loads(parameter.replace("'", "\""))
+            if type(parameter) == int:
+                return common.response_failed('参数输入错误')
+        except json.JSONDecodeError:
+            return common.response_failed('参数输入错误')
         if method == 'get':
-            r = requests.get(url,  data=parameter)
+            r = requests.get(url, headers=header, data=parameter)
         if method == 'post':
-            r = requests.post(url,  data=parameter)
+            r = requests.post(url, headers=header, data=parameter)
         return common.response_succeed(data=r.text)
+
 
 # 获取项目和模块列表
 def get_project_list(request):
@@ -132,7 +137,6 @@ def save_case(request):
         header = request.POST.get('req_header')
         ptype = request.POST.get('req_ptype')
         parameter = request.POST.get('parameter')
-        # payload = json.loads(parameter.replace("'", "\""))
 
         if module == '' or method == '' or url == '':
             return HttpResponse('必选参数不能为空')
@@ -161,9 +165,9 @@ def update_case(request, cid):
 
         module_obj = Module.objects.get(name=module)
         Testcase.objects.select_for_update().filter(id=cid).update(module=module_obj, name=name, req_url=url,
-                                                                          req_method=method,
-                                                                          req_header=header, req_ptype=ptype,
-                                                                          req_parameter=parameter)
+                                                                   req_method=method,
+                                                                   req_header=header, req_ptype=ptype,
+                                                                   req_parameter=parameter)
         return HttpResponse('保存成功')
 
     else:
@@ -177,7 +181,6 @@ def api_assert(request):
         result_text = request.POST.get('result_text')
         assert_error = []
         if assert_text == '' or result_text == '':
-            # return JsonResponse({'success': 'False', 'msg': '断言或者接口返回不能为空', 'ast': assert_error})
             return common.response_failed('断言或者接口返回不能为空')
 
         for ast in assert_list:
@@ -186,11 +189,9 @@ def api_assert(request):
             except AssertionError:
                 assert_error.append(ast)
         if len(assert_error) > 0:
-            # return JsonResponse({'success': 'True', 'msg': '验证失败，请检查以下接口: ', 'ast': assert_error})
             return common.response_failed('验证失败，请检查以下断言: ', assert_error)
         else:
-            # return JsonResponse({'success': 'True', 'msg': '验证成功', 'ast': assert_error})
-            return common.response_succeed('验证成功', data='')
+            return common.response_succeed('验证成功')
 
 
 

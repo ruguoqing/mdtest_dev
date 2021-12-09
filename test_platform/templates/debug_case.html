@@ -123,9 +123,11 @@
                      if (req_url === '') {
                          window.alert('URL不能为空');
                          return;
-                     } else if (parameter === '') {
+                     }
+                     if (parameter === '') {
                          parameter = '{}';
-                     }else if (req_header === '') {
+                     }
+                     if (req_header === '') {
                          req_header = '{}';
                      }
                      // 发送一个请求
@@ -158,10 +160,12 @@
                          'assert_text': assert_text,
                          'result_text': result_text,
                      }, function(resp) {
-
-                         var str = resp.msg+resp.data
-                         window.alert(str);
-                         return;
+                        if(resp.success === 'False'){
+                           let str = resp.msg+resp.data
+                           window.alert(str)}
+                        else if (resp.success === 'True'){
+                         window.alert(resp.msg);
+                         return};
                      });
                  });
 

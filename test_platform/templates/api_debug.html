@@ -119,9 +119,11 @@
                      if (req_url === '') {
                          window.alert('URL不能为空');
                          return;
-                     } else if (req_header === '') {
+                     }
+                     if (req_header === '') {
                          req_header = '{}';
-                     } else if (parameter === '') {
+                     }
+                     if (parameter === '') {
                          parameter = '{}';
                      }
                      // 发送一个请求

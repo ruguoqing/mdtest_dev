@@ -1,11 +1,9 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 from project_app.forms import ModuleForm
-from project_app.models import Module
+from project_app.models import Module,Project
 from django.http import HttpResponse, HttpResponseRedirect
 
-
-# Create your views here.
 
 
 @login_required  # 判断用户是否登录
@@ -24,7 +22,6 @@ def add_module(request):
     if request.method == "POST":
         form = ModuleForm(request.POST)
         if form.is_valid():  # 进行数据校验
-            # 校验成功
             data = form.cleaned_data  # 校验成功的值，会放在cleaned_data里。
             print(data)
             Module.objects.create(project=data['project'], name=data['name'], describe=data['describe'])

@@ -1,14 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <testsuites>
-	<testsuite name="MyTest-20211130145749" tests="3" file=".py" time="1.127" timestamp="2021-11-30T14:57:50" failures="0" errors="0" skipped="0">
-		<testcase classname="MyTest" name="test_run_case_1_14" time="0.040" timestamp="2021-11-30T14:57:49" file="interface_app/extend/task_run.py" line="15">
-			<!--test_run_case_1_14-->
+	<testsuite name="MyTest-20211206113746" tests="4" file=".py" time="1.890" timestamp="2021-12-06T11:37:47" failures="0" errors="0" skipped="0">
+		<testcase classname="MyTest" name="test_run_case_1_23" time="0.002" timestamp="2021-12-06T11:37:46" file="interface_app/extend/task_run.py" line="15">
+			<!--test_run_case_1_23-->
 		</testcase>
-		<testcase classname="MyTest" name="test_run_case_2_15" time="0.519" timestamp="2021-11-30T14:57:49" file="interface_app/extend/task_run.py" line="15">
-			<!--test_run_case_2_15-->
+		<testcase classname="MyTest" name="test_run_case_2_26" time="1.344" timestamp="2021-12-06T11:37:47" file="interface_app/extend/task_run.py" line="15">
+			<!--test_run_case_2_26-->
 		</testcase>
-		<testcase classname="MyTest" name="test_run_case_3_18" time="0.569" timestamp="2021-11-30T14:57:50" file="interface_app/extend/task_run.py" line="15">
-			<!--test_run_case_3_18-->
+		<testcase classname="MyTest" name="test_run_case_3_27" time="0.187" timestamp="2021-12-06T11:37:47" file="interface_app/extend/task_run.py" line="15">
+			<!--test_run_case_3_27-->
+		</testcase>
+		<testcase classname="MyTest" name="test_run_case_4_28" time="0.357" timestamp="2021-12-06T11:37:47" file="interface_app/extend/task_run.py" line="15">
+			<!--test_run_case_4_28-->
 		</testcase>
 	</testsuite>
 </testsuites>
